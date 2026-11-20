@@ -26,7 +26,7 @@ export function FightBar({ phase, blocker, error, onFight }: FightBarProps) {
       <button
         type="button"
         onClick={onFight}
-        disabled={blocker !== null}
+        disabled={blocker !== null || searching}
         title={blocker ?? undefined}
         className="shrink-0 rounded-md bg-life px-4 py-2 font-display font-bold text-parchment hover:brightness-110 disabled:bg-panel-edge disabled:text-muted"
       >
