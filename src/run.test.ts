@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getItem } from "./items";
-import { REROLL_COST, buyBlocker, buyItem, firstFreeSlot, newRun, rerollBlocker, rerollShop, sellBlocker, sellItem, sellPrice } from "./run";
+import { REROLL_COST, buyBlocker, buyItem, firstFreeSlot, newRun, rerollBlocker, rerollShop, sellBlocker, sellItem, sellPrice, moveBlocker, moveItem } from "./run";
 import { BACKPACK_SIZE } from "./shop";
 import type { RunState } from "./types";
 
@@ -158,5 +158,51 @@ describe("firstFreeSlot", () => {
     expect(firstFreeSlot(newRun(1))).toBe(0);
     expect(firstFreeSlot(withFullBackpack(newRun(1)))).toBe(-1);
     expect(newRun(1).backpack).toHaveLength(BACKPACK_SIZE);
+  });
+});
+
+/** A run whose backpack holds the given items, one per slot; `null` leaves a slot empty. */
+function runWith(...slots: (string | null)[]): RunState {
+  const run = newRun(1);
+  const backpack = run.backpack.map((_, i) => (slots[i] ? { uid: `item-${i}`, itemId: slots[i]! } : null));
+  return { ...run, backpack };
+}
+
+/** The uids in the backpack, sorted: lets a test compare "the same items" regardless of order. */
+const uids = (run: RunState) => run.backpack.flatMap((slot) => (slot ? [slot.uid] : [])).sort();
+
+describe("moveItem (B2)", () => {
+  it("moves an item to an empty slot", () => {
+    const run = moveItem(runWith("pot-lid"), 0, 3);
+    expect(run.backpack[0]).toBeNull();
+    expect(run.backpack[3]?.itemId).toBe("pot-lid");
+  });
+
+  it("swaps two items", () => {
+    const run = moveItem(runWith("pot-lid", "hunting-bow"), 0, 1);
+    expect(run.backpack[0]?.itemId).toBe("hunting-bow");
+    expect(run.backpack[1]?.itemId).toBe("pot-lid");
+  });
+
+  it("changes nothing when moving onto itself, from an empty slot, or out of range", () => {
+    const run = runWith("pot-lid");
+    expect(moveItem(run, 0, 0)).toBe(run);
+    expect(moveItem(run, 2, 0)).toBe(run);
+    expect(moveItem(run, 0, 99)).toBe(run);
+    expect(moveBlocker(run, 2, 0)).toBe("Nothing to move");
+    expect(moveBlocker(run, 0, 0)).toBe("Already in this slot");
+    expect(moveBlocker(run, 0, 99)).toBe("No such slot");
+  });
+
+  it("never loses or duplicates an item, even over a chain of moves", () => {
+    const run = runWith("pot-lid", null, "hunting-bow", "iron-cleaver");
+    const moves: [number, number][] = [[0, 1], [2, 3], [3, 5], [1, 2]];
+    let state = run;
+    for (const [from, to] of moves) {
+      const next = moveItem(state, from, to);
+      expect(next).not.toBe(state); // the move really happened
+      expect(uids(next)).toEqual(uids(run)); // still the same items as at the start
+      state = next;
+    }
   });
 });

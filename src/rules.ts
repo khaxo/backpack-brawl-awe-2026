@@ -46,7 +46,7 @@ export const RULES: RuleSection[] = [
       `The shop offers ${SHOP_SIZE} new items every round. Rerolling replaces all ${SHOP_SIZE} of them, sold-out slots included, for ${REROLL_COST} 🪙.`,
       `Bought items go to the first free slot of your ${BACKPACK_COLS}×${BACKPACK_ROWS} backpack. With every slot taken you cannot buy until you sell something.`,
       `Selling an item pays half its price, rounded down — buying and selling the same item always costs you gold.`,
-      `Only items in your backpack fight. Their position doesn't matter.`,
+            `Only items in your backpack fight. Their position doesn't matter, but you can rearrange them: click an item, then another slot to move it there or swap the two. Escape cancels.`,
     ],
   },
   {
