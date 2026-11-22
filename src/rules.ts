@@ -58,6 +58,8 @@ export const RULES: RuleSection[] = [
       `Battles run on their own. Your hero has ${HERO_BASE_HP} HP; every item fires whenever its cooldown is up.`,
       `Damage hits block first; only the rest is lost from HP. Unused block stays for the rest of the battle.`,
       `Knock the enemy out to win. ${STATUS_HELP.timer} If both fall at once, you lose.`,
+      `☠️ Poison adds stacks to the enemy. Every ${POISON_INTERVAL * TICK_SECONDS} s each stack costs ${POISON_DAMAGE_PER_STACK} HP. Stacks add up, block does not help, and poison does not wear off.`,
+      `💚 Heal restores your own HP, never above your maximum. A fighter at 0 HP cannot be healed.`,
     ],
   },
 ];
