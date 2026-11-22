@@ -33,6 +33,7 @@ export function buyBlocker(state: RunState, offerIndex: number): string | null {
   return null;
 }
 
+ 
 /** Buys a shop offer into the first free backpack slot; unchanged state if not allowed. */
 export function buyItem(state: RunState, offerIndex: number): RunState {
   if (buyBlocker(state, offerIndex) !== null) return state;
@@ -65,3 +66,22 @@ export function applyBattleResult(state: RunState, winner: Side): RunState {
   const scored = winner === "player" ? { ...state, wins: state.wins + 1 } : { ...state, lives: state.lives - 1 };
   return runOutcome(scored) ? scored : startNextRound(scored);
 }
+
+ /** B2 Why the item in slot `from` can't be moved to slot `to`, or `null` if it can. */
+export function moveBlocker(state: RunState, from: number, to: number): string | null {
+  const isSlot = (i: number) => Number.isInteger(i) && i >= 0 && i < state.backpack.length;
+  if (!isSlot(from) || !isSlot(to)) return "No such slot";
+  if (!state.backpack[from]) return "Nothing to move";
+  if (from === to) return "Already in this slot";
+  return null;
+}
+
+/** B2 Moves an item to another slot and swaps it with the item there, if any. Unchanged state if not allowed. */
+export function moveItem(state: RunState, from: number, to: number): RunState {
+  if (moveBlocker(state, from, to) !== null) return state;
+  const backpack = [...state.backpack];
+  [backpack[from], backpack[to]] = [backpack[to], backpack[from]];
+  return { ...state, backpack };
+}
+
+

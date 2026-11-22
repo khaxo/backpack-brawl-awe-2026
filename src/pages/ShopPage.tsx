@@ -16,6 +16,16 @@ export function ShopPage() {
     update((current) => updateRun(current, (currentRun) => buyItem(currentRun, offerIndex)));
   }
 
+  /** B2, Handle moving items in backpack TODO: Nach der Implementierung von sellItem, handleSell in den Backpack einfügen und die Funktion handleMove anpassen. 
+  function handleMove(from: number, to: number) {
+  update((current) => updateRun(current, (currentRun) => moveItem(currentRun, from, to)));
+}
+function handleSell(slot: number) {
+  update((current) => updateRun(current, (currentRun) => sellItem(currentRun, slot)));   // aus B1
+}
+<Backpack run={run} onMove={handleMove} onSell={handleSell} />
+*/
+
   // Once the opponent is found the phase becomes "battle" and RequireRoute redirects to the battle page.
   async function handleFindOpponent() {
     if (fightBlocker(game) !== null) return;
