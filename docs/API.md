@@ -75,4 +75,13 @@ Example: `API_FAIL=true pnpm server`.
 
 ## Client
 
-`fetchOpponent(round)` in `src/api.ts` performs the request. It resolves with the `Opponent` on success and throws an `Error` carrying the server's `error` text (or a generic message with the status code) for any non-2xx response. When the API is not running, the Vite proxy answers with an error status of its own, which is reported the same way; a network failure rejects as well.
+`fetchOpponent(round, signal)` in `src/api.ts` performs the request. It resolves with the `Opponent` on success. The optional `signal` is an `AbortSignal`: aborting it rejects the promise with an `AbortError`, which the caller recognises by the signal and swallows, because an abandoned search is not a failure to report.
+
+Every other failure rejects with an `Error` whose `message` is written to be read by the player, since the shop shows it as-is:
+
+| Situation | `message` |
+|---|---|
+| The response carries the `{ "error": … }` body above | that text — the API explains the problem better than the client could |
+| A 5xx without that body (the Vite proxy answering because the API is not running) | `The arena cannot be reached. The game server may be down.` |
+| `fetch` itself rejects (no network, no proxy) | the same message, with the original reason kept as the error's `cause` |
+| A 4xx without that body | `Opponent search failed (<status>)` — a malformed request is the client's own bug, so the status stays visible |

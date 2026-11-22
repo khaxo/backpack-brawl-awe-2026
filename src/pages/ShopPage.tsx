@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { fetchOpponent } from "../api";
 import { Backpack } from "../components/Backpack";
 import { FightBar } from "../components/FightBar";
@@ -12,20 +13,37 @@ export function ShopPage() {
   const { game, update } = useActiveGame();
   const { run, phase } = game;
 
+  /** The request of the search that is currently running, if any. */
+  const searchRef = useRef<AbortController | null>(null);
+
   function handleBuy(offerIndex: number) {
     update((current) => updateRun(current, (currentRun) => buyItem(currentRun, offerIndex)));
   }
 
   // Once the opponent is found the phase becomes "battle" and RequireRoute redirects to the battle page.
   async function handleFindOpponent() {
-    if (fightBlocker(game) !== null) return;
+    if (phase !== "shop" || fightBlocker(game) !== null) return;
+
+    // `phase` above is the value of *this* render. A second click that lands
+    // before React has re-rendered therefore passes that check with stale
+    // data and would send a second request. Aborting the previous controller
+    // keeps at most one request alive; the guards in game.ts then decide
+    // whether a response that still arrives may do anything.
+    searchRef.current?.abort();
+    const controller = new AbortController();
+    searchRef.current = controller;
+
     update(startSearch);
     try {
-      const opponent = await fetchOpponent(run.round);
+      const opponent = await fetchOpponent(run.round, controller.signal);
       update((current) => startBattle(current, opponent));
     } catch (error) {
+      // An aborted request was abandoned on purpose — not a failure to report.
+      if (controller.signal.aborted) return;
       const message = error instanceof Error ? error.message : "Opponent search failed.";
       update((current) => searchFailed(current, message));
+    } finally {
+      if (searchRef.current === controller) searchRef.current = null;
     }
   }
 
