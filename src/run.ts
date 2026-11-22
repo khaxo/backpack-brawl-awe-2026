@@ -25,10 +25,23 @@ export function firstFreeSlot(state: RunState): number {
   return state.backpack.indexOf(null);
 }
 
-/** Why an offer can't be bought right now, or `null` if it can. */
+/** B1
+ * Why an offer can't be bought right now, or `null` if it can.
+ *
+ * The backpack check is not cosmetic. Without it `firstFreeSlot` returns -1 and
+ * `buyItem` writes to `backpack[-1]`, which JavaScript happily accepts as a
+ * property nobody ever reads: the gold is gone and the item never arrives.
+ * "An item I pay for always ends up in my backpack" has to be decided *before*
+ * the gold is spent, and that decision is this function.
+ *
+ * A full backpack is reported before the price, because it is the harder
+ * obstacle: no slot exists at all, while gold is only an amount. Both are
+ * solved by selling something, so the player is pointed at the same action.
+ */
 export function buyBlocker(state: RunState, offerIndex: number): string | null {
   const itemId = state.shop[offerIndex];
   if (!itemId) return "Already sold";
+  if (firstFreeSlot(state) === -1) return "Backpack is full";
   if (state.gold < getItem(itemId).price) return "Not enough gold";
   return null;
 }
