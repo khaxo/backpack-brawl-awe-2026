@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getItem } from "./items";
-import { buyBlocker, buyItem, firstFreeSlot, newRun, sellBlocker, sellItem, sellPrice } from "./run";
+import { REROLL_COST, buyBlocker, buyItem, firstFreeSlot, newRun, rerollBlocker, rerollShop, sellBlocker, sellItem, sellPrice } from "./run";
 import { BACKPACK_SIZE } from "./shop";
 import type { RunState } from "./types";
 
@@ -117,6 +117,39 @@ describe("sellItem", () => {
     const full = withFullBackpack(newRun(1));
     expect(buyBlocker(full, 0)).toBe("Backpack is full");
     expect(buyBlocker(sellItem(full, 0), 0)).toBeNull();
+  });
+});
+
+describe("rerollShop", () => {
+  it("charges a coin and replaces every offer", () => {
+    const run = newRun(1);
+    const rolled = rerollShop(run);
+
+    expect(rolled.gold).toBe(run.gold - REROLL_COST);
+    expect(rolled.shop).toHaveLength(run.shop.length);
+    expect(rolled.shop.every((offer) => offer !== null)).toBe(true);
+  });
+
+  it("refills slots the player has already bought", () => {
+    const emptied = buyItem(newRun(1), 0);
+    expect(emptied.shop[0]).toBeNull();
+    expect(rerollShop(emptied).shop[0]).not.toBeNull();
+  });
+
+  it("ignores a reroll the player cannot afford", () => {
+    const broke = { ...newRun(1), gold: 0 };
+    expect(rerollBlocker(broke)).toBe("Not enough gold");
+    expect(rerollShop(broke)).toBe(broke);
+  });
+
+  // B6 will restore a run from its seed; the same seed has to give the same shop.
+  it("is deterministic for the same seed", () => {
+    expect(rerollShop(newRun(7)).shop).toEqual(rerollShop(newRun(7)).shop);
+  });
+
+  it("moves the seed on, so two rerolls are different draws", () => {
+    const once = rerollShop(newRun(1));
+    expect(rerollShop(once).seed).not.toBe(once.seed);
   });
 });
 

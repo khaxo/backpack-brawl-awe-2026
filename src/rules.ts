@@ -1,5 +1,5 @@
 import { HERO_BASE_HP, MAX_TICKS, TICK_SECONDS } from "./battle";
-import { GOLD_PER_ROUND, START_GOLD, START_LIVES, WINS_TO_VICTORY } from "./run";
+import { GOLD_PER_ROUND, REROLL_COST, START_GOLD, START_LIVES, WINS_TO_VICTORY } from "./run";
 import { BACKPACK_COLS, BACKPACK_ROWS, SHOP_SIZE } from "./shop";
 import type { ItemEffects } from "./types";
 
@@ -43,7 +43,7 @@ export const RULES: RuleSection[] = [
     title: "🏪 Shop & backpack",
     rules: [
       `You start with ${START_GOLD} 🪙 and earn ${GOLD_PER_ROUND} 🪙 at the start of every new round. Unspent gold carries over.`,
-      `The shop offers ${SHOP_SIZE} new items every round.`,
+      `The shop offers ${SHOP_SIZE} new items every round. Rerolling replaces all ${SHOP_SIZE} of them, sold-out slots included, for ${REROLL_COST} 🪙.`,
       `Bought items go to the first free slot of your ${BACKPACK_COLS}×${BACKPACK_ROWS} backpack. With every slot taken you cannot buy until you sell something.`,
       `Selling an item pays half its price, rounded down — buying and selling the same item always costs you gold.`,
       `Only items in your backpack fight. Their position doesn't matter.`,

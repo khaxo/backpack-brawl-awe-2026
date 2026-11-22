@@ -6,6 +6,8 @@ export const START_GOLD = 10;
 export const START_LIVES = 3;
 export const WINS_TO_VICTORY = 5;
 export const GOLD_PER_ROUND = 5;
+/** B1 Price of one shop reroll. */
+export const REROLL_COST = 1;
 
 export function newRun(seed: number): RunState {
   const roll = rollShop(seed);
@@ -90,6 +92,29 @@ export function sellItem(state: RunState, slotIndex: number): RunState {
   const backpack = [...state.backpack];
   backpack[slotIndex] = null;
   return { ...state, gold: state.gold + sellPrice(slot.itemId), backpack };
+}
+
+/** B1 Why the shop can't be rerolled right now, or `null` if it can. */
+export function rerollBlocker(state: RunState): string | null {
+  if (state.gold < REROLL_COST) return "Not enough gold";
+  return null;
+}
+
+/** B1
+ * Replaces every shop offer for `REROLL_COST`; unchanged state if not allowed.
+ *
+ * All four offers are replaced, sold-out ones included — that is the point of
+ * paying: a shop the player has emptied becomes four fresh items.
+ *
+ * It draws through `rollShop(state.seed)`, exactly like `startNextRound`, and
+ * stores the seed that comes back. The shop therefore stays deterministic: the
+ * same run replayed from the same seed produces the same offers, which is what
+ * B6 needs to restore a run without handing out a different shop.
+ */
+export function rerollShop(state: RunState): RunState {
+  if (rerollBlocker(state) !== null) return state;
+  const roll = rollShop(state.seed);
+  return { ...state, gold: state.gold - REROLL_COST, seed: roll.seed, shop: roll.offers };
 }
 
 export type RunOutcome = "victory" | "defeat";
