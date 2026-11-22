@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getItem } from "./items";
-import { buyBlocker, buyItem, firstFreeSlot, newRun } from "./run";
+import { buyBlocker, buyItem, firstFreeSlot, newRun, sellBlocker, sellItem, sellPrice } from "./run";
 import { BACKPACK_SIZE } from "./shop";
 import type { RunState } from "./types";
 
@@ -66,6 +66,57 @@ describe("buyItem", () => {
     for (let i = 0; i < run.shop.length; i++) run = buyItem(run, i);
     const uids = run.backpack.flatMap((slot) => (slot ? [slot.uid] : []));
     expect(new Set(uids).size).toBe(uids.length);
+  });
+});
+
+describe("sellItem", () => {
+  /** A run holding one `itemId` in slot 0. */
+  const holding = (itemId: string): RunState => {
+    const run = newRun(1);
+    const backpack = [...run.backpack];
+    backpack[0] = { uid: "held", itemId };
+    return { ...run, backpack };
+  };
+
+  it("frees the slot and pays half the price", () => {
+    const run = holding("hunting-bow"); // 4 🪙
+    const sold = sellItem(run, 0);
+
+    expect(sold.backpack[0]).toBeNull();
+    expect(sold.gold).toBe(run.gold + 2);
+  });
+
+  it("rounds an odd price down", () => {
+    expect(sellPrice("iron-cleaver")).toBe(2); // 5 / 2
+    expect(sellPrice("oak-buckler")).toBe(1); // 3 / 2
+  });
+
+  it("costs the player gold to buy and sell the same item", () => {
+    const run = newRun(1);
+    const back = sellItem(buyItem(run, 0), firstFreeSlot(run));
+    expect(back.gold).toBeLessThan(run.gold);
+  });
+
+  it("ignores an empty slot", () => {
+    const run = newRun(1);
+    expect(sellBlocker(run, 0)).toBe("Empty slot");
+    expect(sellItem(run, 0)).toBe(run);
+  });
+
+  it("keeps the other slots where they are", () => {
+    const run = newRun(1);
+    const two = buyItem(buyItem(run, 0), 1);
+    const sold = sellItem(two, 0);
+
+    expect(sold.backpack).toHaveLength(BACKPACK_SIZE);
+    expect(sold.backpack[0]).toBeNull();
+    expect(sold.backpack[1]).toBe(two.backpack[1]);
+  });
+
+  it("makes room for a purchase that was blocked", () => {
+    const full = withFullBackpack(newRun(1));
+    expect(buyBlocker(full, 0)).toBe("Backpack is full");
+    expect(buyBlocker(sellItem(full, 0), 0)).toBeNull();
   });
 });
 

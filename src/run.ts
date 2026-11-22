@@ -58,6 +58,40 @@ export function buyItem(state: RunState, offerIndex: number): RunState {
   return { ...state, gold: state.gold - getItem(itemId).price, shop, backpack, nextUid: state.nextUid + 1 };
 }
 
+/** B1
+ * What one item is worth when sold: half its price, rounded down.
+ *
+ * Rounding down is what makes buying and selling a loss rather than a way to
+ * print gold — a 5 🪙 item returns 2 🪙. The shop can therefore never be farmed.
+ */
+export const sellPrice = (itemId: string) => Math.floor(getItem(itemId).price / 2);
+
+/** B1 Why a backpack slot can't be sold right now, or `null` if it can. */
+export function sellBlocker(state: RunState, slotIndex: number): string | null {
+  if (!state.backpack[slotIndex]) return "Empty slot";
+  return null;
+}
+
+/** B1
+ * Sells the item in `slotIndex`; unchanged state if not allowed.
+ *
+ * The item leaves the run for good — it does not return to the shop. The
+ * requirement's "never lost or duplicated" is about the accident the buy bug
+ * caused, not about a sale the player asked for. Putting it back would also
+ * have to pick a shop slot, and those belong to the current roll.
+ *
+ * The backpack array keeps its length: selling frees exactly the slot that was
+ * used, it does not shift the others. That matters for B2, where positions are
+ * something the player arranges.
+ */
+export function sellItem(state: RunState, slotIndex: number): RunState {
+  if (sellBlocker(state, slotIndex) !== null) return state;
+  const slot = state.backpack[slotIndex]!;
+  const backpack = [...state.backpack];
+  backpack[slotIndex] = null;
+  return { ...state, gold: state.gold + sellPrice(slot.itemId), backpack };
+}
+
 export type RunOutcome = "victory" | "defeat";
 
 /** `victory` / `defeat` once the run is over, otherwise `null`. */
