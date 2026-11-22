@@ -7,6 +7,10 @@ export const TICK_SECONDS = 0.5;
 /** Battles that last longer are decided by the timeout rule. */
 export const MAX_TICKS = 60;
 export const HERO_BASE_HP = 40;
+/** B3 Ticks between two poison damages (2 ticks = 1 s). */
+export const POISON_INTERVAL = 2;
+/** B3 HP lost per poison stack at every poison damage. */
+export const POISON_DAMAGE_PER_STACK = 1;
 
 /** Turns a list of item ids into a fighter with the catalog values of each item. */
 export function buildFighter(itemIds: string[], baseHp: number, name = "Fighter"): Fighter {
@@ -32,6 +36,8 @@ interface FighterState {
   block: number;
   /** Ticks each item has charged towards its cooldown. */
   charge: number[];
+  /** B3 Number of poison stacks on the fighter. */
+  poison: number;    //B3
 }
 
 const other = (side: Side): Side => (side === "player" ? "opponent" : "player");
@@ -40,6 +46,7 @@ const snapshot = (s: FighterState): FighterSnapshot => ({
   hp: Math.max(0, s.hp),
   maxHp: s.fighter.maxHp,
   block: s.block,
+  poison: s.poison,    //B3
 });
 
 const isDown = (s: FighterState) => s.hp <= 0;
@@ -96,7 +103,7 @@ export function simulateBattle(player: Fighter, opponent: Fighter): BattleResult
 }
 
 function initState(fighter: Fighter): FighterState {
-  return { fighter, hp: fighter.maxHp, block: 0, charge: fighter.items.map(() => 0) };
+  return { fighter, hp: fighter.maxHp, block: 0, poison: 0, charge: fighter.items.map(() => 0) }; //B3
 }
 
 /** Advances one tick of cooldowns and returns the items that fire this tick. */
