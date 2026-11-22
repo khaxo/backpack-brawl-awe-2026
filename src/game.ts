@@ -25,17 +25,48 @@ export function fightBlocker(game: GameState): string | null {
   return null;
 }
 
+/** B5
+ * Starts the search for an opponent.
+ *
+ * The phase check is not a duplicate of the disabled button: the button only
+ * stops the common case. A second call can still arrive while a search runs —
+ * from a double click that fires before the re-render, or from any other code
+ * path. The rule that the user is shown ("you cannot search twice") has to
+ * protect the transition itself, not only the control that triggers it.
+ */
 export function startSearch(game: GameState): GameState {
+  if (game.phase !== "shop") return game;
   if (fightBlocker(game) !== null) return game;
   return { ...game, phase: "searching", error: null };
 }
 
+/** B5
+ * Ends a failed search.
+ *
+ * Returning to `shop` is the whole point: the shop and the backpack are
+ * disabled while the phase is `searching`, so leaving the phase alone would
+ * leave the player stranded on a dead screen with an error message.
+ */
 export function searchFailed(game: GameState, error: string): GameState {
-  return { ...game, error };
+  if (game.phase !== "searching") return game;
+  return { ...game, phase: "shop", error };
 }
 
-/** Simulates the battle against `opponent` and starts its replay at the first frame. */
+/**
+ * Simulates the battle against `opponent` and starts its replay at the first frame.
+ *
+ * Both guards exist because a response can arrive long after it stopped being
+ * relevant — the API is deliberately slow:
+ *
+ * - `phase !== "searching"` rejects a battle that nobody is waiting for, for
+ *   example a response that outlived its own search.
+ * - `opponent.round !== run.round` rejects a response for a round that is over.
+ *   The round travels with the opponent (the API echoes it back), so no extra
+ *   bookkeeping is needed to tell the two apart.
+ */
 export function startBattle(game: GameState, opponent: Opponent): GameState {
+  if (game.phase !== "searching") return game;
+  if (opponent.round !== game.run.round) return game;
   const player = buildPlayerFighter(game.run.backpack);
   const enemy = buildOpponentFighter(opponent);
   const result = simulateBattle(player, enemy);
