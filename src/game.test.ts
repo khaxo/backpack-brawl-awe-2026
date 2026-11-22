@@ -69,6 +69,13 @@ describe("startBattle", () => {
     const searching = startSearch(readyGame());
     expect(startBattle(searching, opponentFor(2))).toBe(searching);
   });
+
+  // "A slow, duplicate or late response must never restart a battle": the late
+  // response here is for the right round, so only the phase can reject it.
+  it("ignores a response that arrives while a battle is running", () => {
+    const battle = startBattle(startSearch(readyGame()), opponentFor(1));
+    expect(startBattle(battle, opponentFor(1))).toBe(battle);
+  });
 });
 
 describe("the battle result", () => {

@@ -25,7 +25,7 @@ export function fightBlocker(game: GameState): string | null {
   return null;
 }
 
-/**
+/** B5
  * Starts the search for an opponent.
  *
  * The phase check is not a duplicate of the disabled button: the button only
@@ -40,7 +40,7 @@ export function startSearch(game: GameState): GameState {
   return { ...game, phase: "searching", error: null };
 }
 
-/**
+/** B5
  * Ends a failed search.
  *
  * Returning to `shop` is the whole point: the shop and the backpack are
