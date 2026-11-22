@@ -121,4 +121,20 @@ export interface GameState {
   battle: BattleReplay | null;
   /** Last opponent-search error, shown in the shop. */
   error: string | null;
+  /**
+   * B7 Identifies this run to the hall of fame, so the same run cannot be
+   * listed twice. It sits here and not in `RunState` because `newRun` is pure
+   * and should stay that way; the id is handed in from outside.
+   */
+  runId: string;
+}
+
+/** B7 One row of the hall of fame, as `GET /api/runs` returns it. */
+export interface HallOfFameEntry {
+  runId: string;
+  name: string;
+  outcome: "victory" | "defeat";
+  wins: number;
+  lives: number;
+  round: number;
 }

@@ -8,8 +8,8 @@ import type { BattleReplay, GameState, Opponent, RunState } from "./types";
  * Every function is pure, so they can be passed straight to `setState`.
  */
 
-export function newGame(seed: number): GameState {
-  return { phase: "shop", run: newRun(seed), battle: null, error: null };
+export function newGame(seed: number, runId: string): GameState {
+  return { phase: "shop", run: newRun(seed), battle: null, error: null, runId };
 }
 
 /** Applies a shop/backpack action; only allowed while shopping. */

@@ -12,7 +12,7 @@ import type { GameState, Opponent } from "./types";
 
 /** A run that is allowed to fight: the cheapest offer bought into the backpack. */
 function readyGame(): GameState {
-  const game = newGame(1);
+  const game = newGame(1, "test-run");
   return { ...game, run: buyItem(game.run, 0) };
 }
 
@@ -36,7 +36,7 @@ describe("startSearch", () => {
   });
 
   it("refuses to search with an empty backpack", () => {
-    const empty = newGame(1);
+    const empty = newGame(1, "test-run");
     expect(startSearch(empty)).toBe(empty);
   });
 });

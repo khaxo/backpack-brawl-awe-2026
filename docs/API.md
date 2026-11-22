@@ -168,3 +168,9 @@ Every other failure rejects with an `Error` whose `message` is written to be rea
 | A 5xx without that body (the Vite proxy answering because the API is not running) | `The arena cannot be reached. The game server may be down.` |
 | `fetch` itself rejects (no network, no proxy) | the same message, with the original reason kept as the error's `cause` |
 | A 4xx without that body | `Opponent search failed (<status>)` — a malformed request is the client's own bug, so the status stays visible |
+
+### Hall of fame
+
+`submitRun(run)` and `fetchHallOfFame()` in `src/api.ts`. Both reject with an `Error` whose `message` is meant to be read by the player: the API's own `{ error: … }` text when it sent one, otherwise `The hall of fame cannot be reached. The game server may be down.`
+
+`submitRun` **resolves** on 409. The goal is "this run is listed", and after a 409 it is — treating it as a failure would show the player an error for something that worked. Only a 400 or a 503 rejects.
