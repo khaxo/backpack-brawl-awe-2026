@@ -194,11 +194,15 @@ describe("moveItem (B2)", () => {
     expect(moveBlocker(run, 0, 99)).toBe("No such slot");
   });
 
-  it("never loses or duplicates an item", () => {
+  it("never loses or duplicates an item, even over a chain of moves", () => {
     const run = runWith("pot-lid", null, "hunting-bow", "iron-cleaver");
     const moves: [number, number][] = [[0, 1], [2, 3], [3, 5], [1, 2]];
+    let state = run;
     for (const [from, to] of moves) {
-      expect(uids(moveItem(run, from, to))).toEqual(uids(run));
+      const next = moveItem(state, from, to);
+      expect(next).not.toBe(state); // the move really happened
+      expect(uids(next)).toEqual(uids(run)); // still the same items as at the start
+      state = next;
     }
   });
 });
