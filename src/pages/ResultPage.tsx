@@ -1,5 +1,6 @@
 import { RunHeader } from "../components/RunHeader";
 import { RunOver } from "../components/RunOver";
+import { SubmitRun } from "../components/SubmitRun";
 import { runOutcome } from "../run";
 import { useActiveGame } from "../state/GameContext";
 
@@ -12,7 +13,10 @@ export function ResultPage() {
   return (
     <>
       <RunHeader run={game.run} />
-      <RunOver run={game.run} outcome={outcome} onNewRun={startNewRun} />
+      <RunOver run={game.run} outcome={outcome} onNewRun={startNewRun}>
+        {/* B7 Inside the panel: submitting belongs to this run, not to the next one. */}
+        <SubmitRun runId={game.runId} run={game.run} />
+      </RunOver>
     </>
   );
 }

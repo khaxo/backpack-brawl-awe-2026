@@ -8,8 +8,8 @@ import type { BattleReplay, GameState, Opponent, RunState } from "./types";
  * Every function is pure, so they can be passed straight to `setState`.
  */
 
-export function newGame(seed: number): GameState {
-  return { phase: "shop", run: newRun(seed), battle: null, error: null };
+export function newGame(seed: number, runId: string): GameState {
+  return { phase: "shop", run: newRun(seed), battle: null, error: null, runId };
 }
 
 /** Applies a shop/backpack action; only allowed while shopping. */
@@ -97,6 +97,16 @@ export function leaveBattle(game: GameState): GameState {
 /** URL paths of the app's screens. */
 export const ROUTES = { start: "/", shop: "/shop", battle: "/battle", result: "/result" } as const;
 export type GameRoute = (typeof ROUTES)[keyof typeof ROUTES];
+
+/**
+ * B7 The hall of fame, deliberately **not** part of `ROUTES`.
+ *
+ * `GameRoute` is the set of screens a phase can demand, and `routeForGame`
+ * must return one of them. No phase leads to the hall of fame — it is
+ * readable with no run at all — so putting it in `ROUTES` would widen that
+ * return type with a page the phase can never mean.
+ */
+export const HALL_OF_FAME = "/hall-of-fame";
 
 /**
  * The screen that matches the game's phase. Shop, battle and result pages
