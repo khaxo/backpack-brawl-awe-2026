@@ -94,10 +94,13 @@ const LOG_ROW = "grid grid-cols-[1fr_auto_1fr] items-start gap-2";
 /** Text colour per event: damage red, everything else neutral. */
 const EVENT_COLOUR: Partial<Record<BattleEventKind, string>> = {
   damage: "text-life",
+  poison: "text-green-400",
+  heal: "text-emerald-300",
 };
 
 function LogLine({ event }: { event: BattleEvent }) {
-  const icon = getItem(event.itemId).icon;
+  // Poison damage comes from the status, not from an item, so it has no item icon.
+  const icon = event.itemId ? getItem(event.itemId).icon : "☠️"; //B3
   const byPlayer = event.source === "player";
   const text = (
     <span className={`flex gap-1.5 ${byPlayer ? "" : "flex-row-reverse text-right"} ${EVENT_COLOUR[event.kind] ?? ""}`}>
@@ -123,7 +126,7 @@ interface FighterPanelProps {
 }
 
 function FighterPanel({ side, icon, fighter, snapshot }: FighterPanelProps) {
-  const { hp, maxHp, block } = snapshot;
+  const { hp, maxHp, block, poison } = snapshot;
   const knockedOut = hp <= 0;
 
   return (
@@ -140,6 +143,11 @@ function FighterPanel({ side, icon, fighter, snapshot }: FighterPanelProps) {
 
       <Bar label="HP" value={hp} max={maxHp} text={`${hp} / ${maxHp}`} colour="bg-life" help={STATUS_HELP.hp} />
       <Bar label="Block" value={block} max={maxHp} text={`🛡️ ${block}`} colour="bg-block" help={STATUS_HELP.block} />
+      {poison > 0 && (
+        <p title={STATUS_HELP.poison} className="cursor-help text-sm text-green-400">
+          ☠️ Poison {poison}
+        </p>
+      )}
 
       <ul className="flex flex-wrap gap-1" aria-label="Items">
         {fighter.items.map((item, index) => (
