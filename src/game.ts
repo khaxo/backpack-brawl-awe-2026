@@ -99,6 +99,16 @@ export const ROUTES = { start: "/", shop: "/shop", battle: "/battle", result: "/
 export type GameRoute = (typeof ROUTES)[keyof typeof ROUTES];
 
 /**
+ * B7 The hall of fame, deliberately **not** part of `ROUTES`.
+ *
+ * `GameRoute` is the set of screens a phase can demand, and `routeForGame`
+ * must return one of them. No phase leads to the hall of fame — it is
+ * readable with no run at all — so putting it in `ROUTES` would widen that
+ * return type with a page the phase can never mean.
+ */
+export const HALL_OF_FAME = "/hall-of-fame";
+
+/**
  * The screen that matches the game's phase. Shop, battle and result pages
  * redirect here when they don't match, so the URL always follows the phase.
  */
