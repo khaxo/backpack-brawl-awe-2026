@@ -1,13 +1,20 @@
 import { TICK_SECONDS } from "../battle";
 import { describeEffects, getItem } from "../items";
 import { sellPrice, moveBlocker, sellBlocker } from "../run";
-import { BACKPACK_COLS } from "../shop";
+import { activeSets, SET_THRESHOLD, SETS } from "../sets";
+import { BACKPACK_COLS, itemIdsOf } from "../shop";
+import { SetBadge } from "./SetBadge";
 import { useState } from "react";
 import type { ItemDef, RunState } from "../types"; // Vorher: Backpack as BackpackSlots
 
 /** Hover text for a backpack slot: name, effects and cooldown. */
 const tooltip = (item: ItemDef) =>
-  [item.name, ...describeEffects(item.effects).map(({ label }) => label), `⏱️ every ${item.cooldown * TICK_SECONDS}s`].join("\n");
+  [
+    item.name,
+    ...describeEffects(item.effects).map(({ label }) => label),
+    `⏱️ every ${item.cooldown * TICK_SECONDS}s`,
+    ...(item.setId ? [`${SETS[item.setId].icon} ${SETS[item.setId].name} set`] : []),
+  ].join("\n");
 
 interface BackpackProps {
   /** The whole run, not just the slots: `moveBlocker` and `sellBlocker` take a `RunState`, like `buyBlocker`. */
@@ -26,6 +33,7 @@ export function Backpack({ run, onMove, onSell }: BackpackProps) {
    */
   const [selected, setSelected] = useState<number | null>(null);
   const selectedSlot = selected !== null ? run.backpack[selected] : null;
+  const sets = activeSets(itemIdsOf(run.backpack));
   
   function handleSlotClick(index: number) {
     if (selected === null) {
@@ -97,6 +105,14 @@ export function Backpack({ run, onMove, onSell }: BackpackProps) {
           );
         })}
       </div>
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">
+        Active sets:
+        {sets.length === 0 ? (
+          <span>none ({SET_THRESHOLD} items of a set needed)</span>
+        ) : (
+          sets.map((id) => <SetBadge key={id} setId={id} active />)
+        )}
+      </p>
       {/* B1 Selling moved here from the slot: a button inside a slot button is not valid HTML. */}
       {selected !== null && selectedSlot && (
         <button
