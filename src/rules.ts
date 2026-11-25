@@ -53,6 +53,15 @@ export const RULES: RuleSection[] = [
     ],
   },
   {
+    title: "💾 Reloading",
+    rules: [
+      `Your run is saved in this browser. Reload or close the tab and you continue where you were.`,
+      `Reloading during a search returns you to the shop — the request is gone. You find the same opponent again: each round has one.`,
+      `Reloading during a battle replays it from the start. The battle is recomputed from your backpack and your opponent, so the outcome is the one you already had.`,
+      `Reloading cannot give you a new shop, a different opponent, a second result or an escape from a loss.`,
+    ],
+  },
+  {
     title: "⚔️ Battle",
     rules: [
       `Battles run on their own. Your hero has ${HERO_BASE_HP} HP; every item fires whenever its cooldown is up.`,

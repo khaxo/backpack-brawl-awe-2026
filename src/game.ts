@@ -67,10 +67,25 @@ export function searchFailed(game: GameState, error: string): GameState {
 export function startBattle(game: GameState, opponent: Opponent): GameState {
   if (game.phase !== "searching") return game;
   if (opponent.round !== game.run.round) return game;
-  const player = buildPlayerFighter(game.run.backpack);
+  return { ...game, phase: "battle", battle: createBattle(game.run, opponent) };
+}
+
+/** B6
+ * The battle itself, without the guards above.
+ *
+ * A restored save has to rebuild the replay, but it arrives in no phase that
+ * `startBattle` would accept — it is not the answer to a running search. The
+ * calculation is therefore its own function, and both callers use it, so a
+ * restored battle can never differ from the one the player was watching.
+ *
+ * `simulateBattle` takes no randomness, so the same run and the same opponent
+ * always produce the same frames and the same winner. That is what makes a
+ * reload harmless: it cannot buy a better outcome.
+ */
+export function createBattle(run: RunState, opponent: Opponent): BattleReplay {
+  const player = buildPlayerFighter(run.backpack);
   const enemy = buildOpponentFighter(opponent);
-  const result = simulateBattle(player, enemy);
-  return { ...game, phase: "battle", battle: { opponent, player, enemy, result, frame: 0 } };
+  return { opponent, player, enemy, result: simulateBattle(player, enemy), frame: 0 };
 }
 
 export const isReplayDone = (battle: BattleReplay) => battle.frame >= battle.result.frames.length - 1;
