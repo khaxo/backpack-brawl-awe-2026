@@ -12,6 +12,12 @@ export const HERO_BASE_HP = 40;
 export const POISON_INTERVAL = 2;
 /** B3 HP lost per poison stack at every poison damage. */
 export const POISON_DAMAGE_PER_STACK = 1;
+/** B4 Burn stacks added by every hit of a Fire item while the Fire bonus is active. */
+export const BURN_STACKS_PER_HIT = 2;
+/** B4 HP lost per burn stack at every tick. Block absorbs it first. */
+export const BURN_DAMAGE_PER_STACK = 1;
+/** B4 Burn stacks that wear off at every tick. */
+export const BURN_DECAY_PER_TICK = 1;
 
 /** Turns a list of item ids into a fighter with the catalog values of each item. */
 export function buildFighter(itemIds: string[], baseHp: number, name = "Fighter"): Fighter {
@@ -42,6 +48,7 @@ interface FighterState {
   charge: number[];
   /** B3 Number of poison stacks on the fighter. */
   poison: number;    //B3
+  burn: number;    //B4
 }
 
 const other = (side: Side): Side => (side === "player" ? "opponent" : "player");
@@ -51,6 +58,7 @@ const snapshot = (s: FighterState): FighterSnapshot => ({
   maxHp: s.fighter.maxHp,
   block: s.block,
   poison: s.poison,    //B3
+  burn: s.burn,       //B4
 });
 
 const isDown = (s: FighterState) => s.hp <= 0;
@@ -63,9 +71,11 @@ const isDown = (s: FighterState) => s.hp <= 0;
  * 1. Each fighter charges all items by one tick; items whose charge reaches their cooldown fire.
  * 2. Fired items resolve (player first, then opponent). Both sides fire "simultaneously":
  *    which items fire is decided before any effect is applied.
- * 3. Every 'POISON_INTERVAL' ticks each poisoned fighter loses 'POISON_DAMAGE_PER_STACK' HP per 
- *    poison stack. Block does not help against it.
- * After step 3 the battle ends if someone is down; if both are down, the player loses.
+ * 3. Every `POISON_INTERVAL` ticks each poisoned fighter loses `POISON_DAMAGE_PER_STACK` HP
+ *    per poison stack. Block does not help against it.
+ * 4. Every tick each burning fighter loses `BURN_DAMAGE_PER_STACK` HP per burn stack. Block absorbs it
+ *    first. Then `BURN_DECAY_PER_TICK` stacks wear off.
+ * After step 4 the battle ends if someone is down; if both are down, the player loses.
  * After `MAX_TICKS` the higher HP percentage wins; a tie is a player loss.
  */
 export function simulateBattle(player: Fighter, opponent: Fighter): BattleResult {
@@ -112,6 +122,19 @@ export function simulateBattle(player: Fighter, opponent: Fighter): BattleResult
         }
       }
     }
+
+    // B4 Burn ticks every tick. Unlike poison, block absorbs it first, and it wears off.
+    for (const side of ["player", "opponent"] as const) {
+      const s = state[side];
+      if (s.burn > 0) {
+        const burnDamage = s.burn * BURN_DAMAGE_PER_STACK;
+        const absorbed = Math.min(s.block, burnDamage);
+        s.block -= absorbed;
+        s.hp -= burnDamage - absorbed;
+        s.burn = Math.max(0, s.burn - BURN_DECAY_PER_TICK);
+        emit({ source: other(side), target: side, kind: "burn", amount: burnDamage, message: `${s.fighter.name} burns for ${burnDamage}${absorbed > 0 ? ` (${absorbed} blocked)` : ""}` });
+      }
+    }
     winner = knockoutWinner();
 
     frames.push({ tick, player: snapshot(state.player), opponent: snapshot(state.opponent), events: tickEvents });
@@ -123,7 +146,7 @@ export function simulateBattle(player: Fighter, opponent: Fighter): BattleResult
 }
 
 function initState(fighter: Fighter): FighterState {
-  return { fighter, hp: fighter.maxHp, block: 0, poison: 0, charge: fighter.items.map(() => 0) }; //B3
+  return { fighter, hp: fighter.maxHp, block: 0, poison: 0, burn: 0, charge: fighter.items.map(() => 0) }; //B3, B4
 }
 
 /** Advances one tick of cooldowns and returns the items that fire this tick. */
@@ -156,6 +179,13 @@ function resolveItem(
     enemy.hp -= damage - absorbed;
     const note = absorbed > 0 ? ` (${absorbed} blocked)` : "";
     emit({ ...base, target: enemySide, kind: "damage", amount: damage, message: `${item.name} hits ${enemy.fighter.name} for ${damage}${note}` });
+  }
+
+  /** B4 Fire set bonus: every hit of a Fire item also sets the enemy on fire.
+   */
+  if (damage && item.setId === "fire" && self.fighter.sets.includes("fire")) {
+    enemy.burn += BURN_STACKS_PER_HIT;
+    emit({ ...base, target: enemySide, kind: "burn", amount: BURN_STACKS_PER_HIT, message: `${item.name} sets ${enemy.fighter.name} on fire (+${BURN_STACKS_PER_HIT})` });
   }
   if (block) {
     self.block += block;

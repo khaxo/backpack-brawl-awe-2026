@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildFighter, POISON_INTERVAL, simulateBattle } from "./battle";
+import { BURN_DECAY_PER_TICK, BURN_STACKS_PER_HIT, buildFighter, POISON_INTERVAL, simulateBattle } from "./battle";
 import type { Fighter, ItemEffects } from "./types";
 import { GUARDIAN_BONUS_HP } from "./sets";
+
 
 /** A fighter with one test item per `[cooldown, effects]` pair. */
 const fighter = (maxHp: number, ...items: [number, ItemEffects][]): Fighter => ({
@@ -58,5 +59,33 @@ describe("set bonuses", () => {
   it("the battle starts at the boosted max HP", () => {
     const result = simulateBattle(buildFighter(["oak-buckler", "pot-lid"], 40), buildFighter(["chipped-dagger"], 30));
     expect(result.frames[0].player.hp).toBe(40 + GUARDIAN_BONUS_HP);
+  });
+});
+
+
+/** Like `fighter`, but every item is a Fire item and the Fire bonus is active. */
+const fireFighter = (maxHp: number, ...items: [number, ItemEffects][]): Fighter => {
+  const base = fighter(maxHp, ...items);
+  return { ...base, sets: ["fire"], items: base.items.map((item) => ({ ...item, setId: "fire" as const })) };
+};
+
+describe("burn", () => {
+  it("only starts while the Fire bonus is active", () => {
+    const result = simulateBattle({ ...fireFighter(40, [1, { damage: 1 }]), sets: [] }, fighter(1000));
+    expect(result.events.some((e) => e.kind === "burn")).toBe(false);
+  });
+
+  it("is absorbed by block first", () => {
+    const result = simulateBattle(fireFighter(40, [1, { damage: 1 }]), fighter(1000, [1, { block: 100 }]));
+    const after = result.frames[1].opponent;
+    expect(after.hp).toBe(999); // only the hit itself: the burn went into the block
+    expect(after.block).toBeLessThan(100);
+  });
+
+  it("wears off", () => {
+    // Cooldown 40: the item hits once, at tick 40.
+    const result = simulateBattle(fireFighter(40, [40, { damage: 1 }]), fighter(1000));
+    expect(result.frames[40].opponent.burn).toBe(BURN_STACKS_PER_HIT - BURN_DECAY_PER_TICK);
+    expect(result.frames[41].opponent.burn).toBe(0);
   });
 });

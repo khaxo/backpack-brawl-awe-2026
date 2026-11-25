@@ -64,10 +64,11 @@ export interface FighterSnapshot {
   hp: number;
   maxHp: number;
   poison: number;    //B3
+  burn: number;    //B4
   block: number;
 }
 
-export type BattleEventKind = "damage" | "block" | "poison" | "heal"; //B3
+export type BattleEventKind = "damage" | "block" | "poison" | "heal" | "burn"; //B3, B4
 
 export interface BattleEvent {
   tick: number;
