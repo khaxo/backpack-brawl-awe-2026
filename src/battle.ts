@@ -73,8 +73,8 @@ const isDown = (s: FighterState) => s.hp <= 0;
  *    which items fire is decided before any effect is applied.
  * 3. Every `POISON_INTERVAL` ticks each poisoned fighter loses `POISON_DAMAGE_PER_STACK` HP
  *    per poison stack. Block does not help against it.
- * 4. Every tick each burning fighter loses `BURN_DAMAGE_PER_STACK` HP per burn stack. Block absorbs it
- *    first. Then `BURN_DECAY_PER_TICK` stacks wear off.
+ * 4. At the start of every tick BURN_DECAY_PER_TICK burn stacks wear off. 
+ *    Every tick each burning fighter loses BURN_DAMAGE_PER_STACK HP per stack; block absorbs it first.
  * After step 4 the battle ends if someone is down; if both are down, the player loses.
  * After `MAX_TICKS` the higher HP percentage wins; a tie is a player loss.
  */
@@ -100,6 +100,11 @@ export function simulateBattle(player: Fighter, opponent: Fighter): BattleResult
     tick += 1;
     const tickEvents: BattleEvent[] = [];
     const emit = (event: Omit<BattleEvent, "tick">) => tickEvents.push({ tick, ...event });
+    
+    // B4 Burn wears off at the start of the tick, so the stacks shown after a tick still include this tick's burn.
+    for (const side of ["player", "opponent"] as const) {
+      state[side].burn = Math.max(0, state[side].burn - BURN_DECAY_PER_TICK);
+    }
 
     const fired: Record<Side, FighterItem[]> = {
       player: chargeItems(state.player),
@@ -131,7 +136,6 @@ export function simulateBattle(player: Fighter, opponent: Fighter): BattleResult
         const absorbed = Math.min(s.block, burnDamage);
         s.block -= absorbed;
         s.hp -= burnDamage - absorbed;
-        s.burn = Math.max(0, s.burn - BURN_DECAY_PER_TICK);
         emit({ source: other(side), target: side, kind: "burn", amount: burnDamage, message: `${s.fighter.name} burns for ${burnDamage}${absorbed > 0 ? ` (${absorbed} blocked)` : ""}` });
       }
     }

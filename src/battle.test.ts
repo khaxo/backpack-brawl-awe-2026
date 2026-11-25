@@ -85,7 +85,8 @@ describe("burn", () => {
   it("wears off", () => {
     // Cooldown 40: the item hits once, at tick 40.
     const result = simulateBattle(fireFighter(40, [40, { damage: 1 }]), fighter(1000));
-    expect(result.frames[40].opponent.burn).toBe(BURN_STACKS_PER_HIT - BURN_DECAY_PER_TICK);
-    expect(result.frames[41].opponent.burn).toBe(0);
+    expect(result.frames[40].opponent.burn).toBe(BURN_STACKS_PER_HIT);
+    expect(result.frames[41].opponent.burn).toBe(BURN_STACKS_PER_HIT - BURN_DECAY_PER_TICK);
+    expect(result.frames[42].opponent.burn).toBe(0);
   });
 });
