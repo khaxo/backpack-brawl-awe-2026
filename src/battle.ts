@@ -18,7 +18,7 @@ export function buildFighter(itemIds: string[], baseHp: number, name = "Fighter"
     const def = getItem(id);
     return { itemId: def.id, name: def.name, icon: def.icon, cooldown: def.cooldown, effects: { ...def.effects } };
   });
-  return { name, maxHp: baseHp, items };
+  return { name, maxHp: baseHp, items, sets: [] };
 }
 
 /** The player's fighter: every backpack item and the hero's base HP. */

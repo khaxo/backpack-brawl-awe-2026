@@ -6,6 +6,7 @@ import type { Fighter, ItemEffects } from "./types";
 const fighter = (maxHp: number, ...items: [number, ItemEffects][]): Fighter => ({
   name: "Test",
   maxHp,
+  sets: [],
   items: items.map(([cooldown, effects], i) => ({ itemId: `test-${i}`, name: `Item ${i}`, icon: "?", cooldown, effects })),
 });
 
