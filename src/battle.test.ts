@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { POISON_INTERVAL, simulateBattle } from "./battle";
+import { buildFighter, POISON_INTERVAL, simulateBattle } from "./battle";
 import type { Fighter, ItemEffects } from "./types";
+import { GUARDIAN_BONUS_HP } from "./sets";
 
 /** A fighter with one test item per `[cooldown, effects]` pair. */
 const fighter = (maxHp: number, ...items: [number, ItemEffects][]): Fighter => ({
@@ -45,5 +46,17 @@ describe("battle", () => {
   it("is deterministic", () => {
     const run = () => simulateBattle(fighter(40, [2, { poison: 1 }], [3, { heal: 2 }]), fighter(50, [4, { damage: 5 }]));
     expect(run()).toEqual(run());
+  });
+});
+
+describe("set bonuses", () => {
+  it("Guardian adds max HP from 2 items", () => {
+    expect(buildFighter(["oak-buckler"], 40).maxHp).toBe(40);
+    expect(buildFighter(["oak-buckler", "pot-lid"], 40).maxHp).toBe(40 + GUARDIAN_BONUS_HP);
+  });
+
+  it("the battle starts at the boosted max HP", () => {
+    const result = simulateBattle(buildFighter(["oak-buckler", "pot-lid"], 40), buildFighter(["chipped-dagger"], 30));
+    expect(result.frames[0].player.hp).toBe(40 + GUARDIAN_BONUS_HP);
   });
 });

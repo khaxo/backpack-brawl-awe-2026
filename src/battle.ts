@@ -1,5 +1,6 @@
 import { getItem } from "./items";
 import { itemIdsOf } from "./shop";
+import { activeSets, GUARDIAN_BONUS_HP } from "./sets";
 import type { Backpack, BattleEvent, BattleResult, Fighter, FighterItem, FighterSnapshot, Opponent, Side } from "./types";
 
 /** Seconds per battle tick. */
@@ -16,9 +17,12 @@ export const POISON_DAMAGE_PER_STACK = 1;
 export function buildFighter(itemIds: string[], baseHp: number, name = "Fighter"): Fighter {
   const items: FighterItem[] = itemIds.map((id) => {
     const def = getItem(id);
-    return { itemId: def.id, name: def.name, icon: def.icon, cooldown: def.cooldown, effects: { ...def.effects } };
+    return { itemId: def.id, name: def.name, icon: def.icon, cooldown: def.cooldown, effects: { ...def.effects }, setId: def.setId };
   });
-  return { name, maxHp: baseHp, items, sets: [] };
+  // B4 Set bonuses are worked out here, so the player and every opponent get them from the same code.
+  const sets = activeSets(itemIds);
+  const maxHp = baseHp + (sets.includes("guardian") ? GUARDIAN_BONUS_HP : 0);
+  return { name, maxHp, items, sets };
 }
 
 /** The player's fighter: every backpack item and the hero's base HP. */
