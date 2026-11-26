@@ -1,6 +1,8 @@
 import { TICK_SECONDS, MAX_TICKS } from "../battle";
 import { getItem } from "../items";
 import { STATUS_HELP } from "../rules";
+import { SETS } from "../sets";
+import { SetBadge } from "./SetBadge";
 import type { BattleEvent, BattleEventKind, BattleReplay, Fighter, FighterSnapshot, Side } from "../types";
 
 interface BattleViewProps {
@@ -96,11 +98,12 @@ const EVENT_COLOUR: Partial<Record<BattleEventKind, string>> = {
   damage: "text-life",
   poison: "text-green-400",
   heal: "text-emerald-300",
+  burn: "text-orange-400",
 };
 
 function LogLine({ event }: { event: BattleEvent }) {
-  // Poison damage comes from the status, not from an item, so it has no item icon.
-  const icon = event.itemId ? getItem(event.itemId).icon : "☠️"; //B3
+  // Poison and burn damage come from the status, not from an item, so they show a status icon.
+  const icon = event.itemId ? getItem(event.itemId).icon : event.kind === "burn" ? "🔥" : "☠️";  //B3, B4
   const byPlayer = event.source === "player";
   const text = (
     <span className={`flex gap-1.5 ${byPlayer ? "" : "flex-row-reverse text-right"} ${EVENT_COLOUR[event.kind] ?? ""}`}>
@@ -126,7 +129,7 @@ interface FighterPanelProps {
 }
 
 function FighterPanel({ side, icon, fighter, snapshot }: FighterPanelProps) {
-  const { hp, maxHp, block, poison } = snapshot;
+  const { hp, maxHp, block, poison, burn } = snapshot;
   const knockedOut = hp <= 0;
 
   return (
@@ -140,6 +143,13 @@ function FighterPanel({ side, icon, fighter, snapshot }: FighterPanelProps) {
         </span>
         {fighter.name}
       </h3>
+      {fighter.sets.length > 0 && (
+        <div className="flex flex-wrap gap-1" aria-label="Active sets">
+          {fighter.sets.map((id) => (
+            <SetBadge key={id} setId={id} active />
+          ))}
+        </div>
+      )}
 
       <Bar label="HP" value={hp} max={maxHp} text={`${hp} / ${maxHp}`} colour="bg-life" help={STATUS_HELP.hp} />
       <Bar label="Block" value={block} max={maxHp} text={`🛡️ ${block}`} colour="bg-block" help={STATUS_HELP.block} />
@@ -148,11 +158,20 @@ function FighterPanel({ side, icon, fighter, snapshot }: FighterPanelProps) {
           ☠️ Poison {poison}
         </p>
       )}
-
+      {burn > 0 && (
+        <p title={STATUS_HELP.burn} className="cursor-help text-sm text-orange-400">
+          🔥 Burn {burn}
+        </p>
+      )}
       <ul className="flex flex-wrap gap-1" aria-label="Items">
         {fighter.items.map((item, index) => (
-          <li key={index} title={item.name} className="rounded bg-ink/50 px-1.5 py-0.5 text-xl">
+          <li key={index} title={item.setId ? `${item.name} (${SETS[item.setId].name} set)` : item.name} className="rounded bg-ink/50 px-1.5 py-0.5 text-xl">
             {item.icon}
+            {item.setId && (
+              <span className="ml-0.5 text-xs" aria-hidden>
+                {SETS[item.setId].icon}
+              </span>
+            )}
           </li>
         ))}
       </ul>

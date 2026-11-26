@@ -1,3 +1,6 @@
+/** B4 Ids of the item sets. */
+export type SetId = "fire" | "guardian";
+
 export interface ItemEffects {
   damage?: number;
   block?: number;
@@ -15,6 +18,8 @@ export interface ItemDef {
   /** Cooldown in battle ticks (1 tick = 0.5 s). */
   cooldown: number;
   effects: ItemEffects;
+  /** B4Set this item belongs to, if any. */
+  setId?: SetId;
 }
 
 /** A concrete item the player owns; several instances may share one `itemId`. */
@@ -59,10 +64,11 @@ export interface FighterSnapshot {
   hp: number;
   maxHp: number;
   poison: number;    //B3
+  burn: number;    //B4
   block: number;
 }
 
-export type BattleEventKind = "damage" | "block" | "poison" | "heal"; //B3
+export type BattleEventKind = "damage" | "block" | "poison" | "heal" | "burn"; //B3, B4
 
 export interface BattleEvent {
   tick: number;
@@ -99,6 +105,8 @@ export interface FighterItem {
   icon: string;
   cooldown: number;
   effects: ItemEffects;
+  /** B4 Set this item belongs to, if any. */
+  setId?: SetId;
 }
 
 /** Everything `simulateBattle` needs to know about one side. */
@@ -106,6 +114,8 @@ export interface Fighter {
   name: string;
   maxHp: number;
   items: FighterItem[];
+  /** B4 Sets whose bonus is active (2 or more items). */
+  sets: SetId[];
 }
 
 /** A simulated battle being replayed frame by frame. */
