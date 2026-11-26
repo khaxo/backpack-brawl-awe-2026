@@ -1,5 +1,5 @@
-import { SET_HELP } from "../rules";
-import { SETS } from "../sets";
+import { SET_HELP } from "../game/rules";
+import { SETS } from "../game/sets";
 import type { SetId } from "../types";
 
 /** B4 Small label for a set, with the bonus text as tooltip. Highlighted when the bonus is active. */

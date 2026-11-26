@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { newGame, searchFailed, skipReplay, startBattle, startSearch } from "./game";
-import { buyItem } from "./run";
-import type { GameState, Opponent } from "./types";
+import { newGame, searchFailed, skipReplay, startBattle, startSearch } from "../game/game";
+import { buyItem } from "../game/run";
+import type { GameState, Opponent } from "../types";
 
 /**
  * These tests cover B5: a search may not run twice, and a response that is no

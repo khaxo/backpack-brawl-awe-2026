@@ -1,5 +1,108 @@
 # Backpack Brawl
 
+> This README has two parts. **Part 1** describes the game as our team has built it (current state). **Part 2** is the original starter README, kept unchanged below for reference. Where the two differ, Part 1 is correct.
+
+---
+
+# Part 1 — Current state of the game
+
+## What has been added to the starter
+
+| Requirement | What the game does now |
+|---|---|
+| **B1 Shop economy** | Items can be **sold** for half their price (rounded down). The shop can be **rerolled** for 1 🪙. The interface shows why an action is not possible, and the same rule protects the action itself. |
+| **B2 Backpack arrangement** | An item can be selected, moved to another slot, or swapped with the item in an occupied slot. Possible moves are shown, and a selection can be cancelled. |
+| **B3 Poison and heal** | New effects with 3 items each (see catalog). Poison and heal are shown in the battle view, in the combat log, in the rules panel and in tooltips. |
+| **B4 Item sets** | Two sets, **Fire** and **Guardian**, with 3 items each. Set badges are shown on items, and active bonuses are visible. Bonuses apply to the player and to opponents alike. |
+| **B5 Reliable opponent search** | A running search is shown, a second one cannot be started, and a failed API returns to a usable shop with a message. A late or duplicate response cannot start or apply a battle twice. |
+| **B6 Save and resume** | The run is saved in the browser (`localStorage`) and continues on the matching screen after a refresh. Broken or incompatible saves are discarded and the game falls back to a fresh, playable state. |
+| **B7 Hall of fame** | After a run the player enters a name. The run is sent to the API, validated there, and listed on its own page (`/hall-of-fame`). |
+
+## Rules that changed
+
+- The shop shows **6 offers** per round (the starter had 4). The same offer may appear more than once. Rerolling replaces all 6 for 1 🪙.
+- The backpack is still a 2×3 grid (6 slots), but items can now be **moved and swapped** and **sold**.
+- Only items in the backpack fight. Their position still does not matter for the fight.
+- Everything else (3 lives, 5 wins, 10 🪙 start gold, +5 🪙 per round, 40 base HP, 0.5 s ticks, 60 ticks at most) is unchanged.
+
+## Effects
+
+| Effect | What it does |
+|---|---|
+| ⚔️ Damage | Hits the enemy. Block absorbs it first. |
+| 🛡️ Block | Absorbs incoming damage. Unused block stays for the whole battle. |
+| ☠️ Poison | Adds poison stacks to the enemy. Every **2 ticks (1 s)** each stack costs **1 HP**. Stacks add up, block does not help, and poison does not wear off. |
+| 💚 Heal | Restores your own HP, never above the maximum. A fighter at 0 HP cannot be healed. |
+| 🔥 Burn | Comes from the Fire set. Costs **1 HP per stack every tick**. Block absorbs it first. **1 stack wears off every tick.** |
+
+## Sets
+
+A set bonus is active while **2 or more** of its items are in the backpack.
+
+| Set | Bonus |
+|---|---|
+| 🔥 **Fire** (Hunting Bow, Iron Cleaver, Spiked Shield) | Every hit of a Fire item sets the enemy on fire: **+2 burn stacks**. |
+| 🛡️ **Guardian** (Oak Buckler, Pot Lid, Herb Pouch) | **+5 max HP**. |
+
+## Item catalog
+
+| Item | Price | Cooldown (ticks) | Effect | Set |
+|---|---:|---:|---|---|
+| 🗡️ Chipped Dagger | 2 | 4 | 3 damage | — |
+| 🏹 Hunting Bow | 4 | 4 | 5 damage | 🔥 Fire |
+| 🪓 Iron Cleaver | 5 | 8 | 12 damage | 🔥 Fire |
+| ⚔️ Spiked Shield | 4 | 6 | 3 damage, +3 block | 🔥 Fire |
+| 🛡️ Oak Buckler | 3 | 5 | +4 block | 🛡️ Guardian |
+| 🍳 Pot Lid | 2 | 3 | +2 block | 🛡️ Guardian |
+| 🌿 Herb Pouch | 2 | 6 | +3 heal | 🛡️ Guardian |
+| 🎯 Venom Dart | 3 | 4 | +1 poison | — |
+| 🐍 Viper Fang | 4 | 6 | 2 damage, +1 poison | — |
+| 🧪 Plague Flask | 5 | 8 | +3 poison | — |
+| 🍷 Healing Potion | 4 | 8 | +7 heal | — |
+| 🧿 Troll Charm | 5 | 5 | +3 heal, +2 block | — |
+
+## Hall of fame
+
+- `POST /api/runs` stores a finished run. The API rejects invalid or implausible data (for example an empty name, an unfinished run, or a run that was already submitted) with a clear error.
+- `GET /api/runs` lists the runs. Order: **victories first, then more wins, then fewer rounds.**
+- The entries are kept **in memory only**; they are lost when the server stops.
+- The page shows loading, empty and error states and lets the player retry without retyping the name. See [docs/API.md](docs/API.md).
+
+## Save and resume
+
+- Saved: the phase, the run (gold, lives, wins, backpack, shop, seed) and, during a battle, the opponent. The replay is **recomputed** on load, because the simulation has no randomness and gives the same result every time.
+- A finished replay is saved as already settled, so a refresh cannot count the result twice.
+- A refresh cannot be used for a free reroll (the shop offers are part of the save), a different opponent, or a second result.
+
+## Project structure
+
+```
+src/
+  game/        Game rules in plain TypeScript, without React
+    battle.ts    fighters and the battle simulation
+    game.ts      phase transitions, replay steps, routes
+    items.ts     item catalog and effect labels
+    rules.ts     rule texts and tooltips built from the constants
+    run.ts       run rules: buying, selling, rerolling, moving, win/loss
+    sets.ts      sets and their bonuses
+    shop.ts      seeded random numbers, shop rolls, backpack size
+    storage.ts   save and resume in the browser
+  tests/       Vitest tests for the game rules
+  components/  presentational parts (shop, backpack, item card, set badge, ...)
+  pages/       one component per screen
+  state/       game state for all pages, route guard
+  api.ts       opponent and hall-of-fame requests
+  types.ts     shared types
+server/        Express API (opponents, hall of fame) and its test
+docs/          API documentation
+```
+
+Run the tests with `npm test`.
+
+---
+
+# Part 2 — Original starter README (old state)
+
 Backpack Brawl is a small browser-based inventory auto-battler. You are a travelling hero entering the arena with nothing but an empty backpack and a few coins. Between fights you buy items in a shop and pack them into your backpack. The fights themselves run on their own: every item in the backpack fires whenever its cooldown is up, and you watch the battle play out.
 
 This is a partially completed starter for the Advanced Web Development practical exam. It is playable, but it is not yet a finished game. Investigate its existing behavior and extend it according to the requirements.

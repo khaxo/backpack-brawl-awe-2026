@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { CATALOG } from "./items";
-import { activeSets, SETS } from "./sets";
+import { CATALOG } from "../game/items";
+import { activeSets, SETS } from "../game/sets";
 
 describe("sets", () => {
   it("has at least 2 sets, one of them Fire, each with at least 3 items", () => {

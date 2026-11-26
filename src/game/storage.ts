@@ -2,7 +2,7 @@ import { createBattle, isReplayDone, leaveBattle } from "./game";
 import { CATALOG } from "./items";
 import { START_LIVES, WINS_TO_VICTORY, runOutcome } from "./run";
 import { BACKPACK_SIZE, SHOP_SIZE } from "./shop";
-import type { GameState, Opponent, Phase, RunState } from "./types";
+import type { GameState, Opponent, Phase, RunState } from "../types";
 
 /**
  * B6 — saving a run in the browser and picking it up again.

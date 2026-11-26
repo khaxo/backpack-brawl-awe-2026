@@ -1,7 +1,7 @@
 import { getItem } from "./items";
-import { itemIdsOf } from "./shop";
+import { itemIdsOf } from "../game/shop";
 import { activeSets, GUARDIAN_BONUS_HP } from "./sets";
-import type { Backpack, BattleEvent, BattleResult, Fighter, FighterItem, FighterSnapshot, Opponent, Side } from "./types";
+import type { Backpack, BattleEvent, BattleResult, Fighter, FighterItem, FighterSnapshot, Opponent, Side } from "../types";
 
 /** Seconds per battle tick. */
 export const TICK_SECONDS = 0.5;

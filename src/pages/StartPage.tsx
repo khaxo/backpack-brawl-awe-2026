@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
-import { ROUTES } from "../game";
-import { START_GOLD, START_LIVES, WINS_TO_VICTORY } from "../run";
+import { ROUTES } from "../game/game";
+import { START_GOLD, START_LIVES, WINS_TO_VICTORY } from "../game/run";
 import { useGame } from "../state/GameContext";
 
 export function StartPage() {

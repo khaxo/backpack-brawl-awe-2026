@@ -1,4 +1,4 @@
-import type { ItemDef, ItemEffects } from "./types";
+import type { ItemDef, ItemEffects } from "../types";
 
 export const CATALOG: ItemDef[] = [
   { id: "chipped-dagger", name: "Chipped Dagger", icon: "🗡️", price: 2, cooldown: 4, effects: { damage: 3 } },

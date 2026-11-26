@@ -1,7 +1,7 @@
-import { CATALOG } from "./items";
-import type { Backpack } from "./types";
+import { CATALOG } from "../game/items";
+import type { Backpack } from "../types";
 
-export const SHOP_SIZE = 4;
+export const SHOP_SIZE = 6;
 export const BACKPACK_COLS = 2;
 export const BACKPACK_ROWS = 3;
 export const BACKPACK_SIZE = BACKPACK_COLS * BACKPACK_ROWS;

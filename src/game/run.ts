@@ -1,6 +1,6 @@
-import { getItem } from "./items";
-import { BACKPACK_SIZE, rollShop } from "./shop";
-import type { RunState, Side } from "./types";
+import { getItem } from "../game/items";
+import { BACKPACK_SIZE, rollShop } from "../game/shop";
+import type { RunState, Side } from "../types";
 
 export const START_GOLD = 10;
 export const START_LIVES = 3;
@@ -104,8 +104,8 @@ export function rerollBlocker(state: RunState): string | null {
 /** B1
  * Replaces every shop offer for `REROLL_COST`; unchanged state if not allowed.
  *
- * All four offers are replaced, sold-out ones included — that is the point of
- * paying: a shop the player has emptied becomes four fresh items.
+ * All six offers are replaced, sold-out ones included — that is the point of
+ * paying: a shop the player has emptied becomes six fresh items.
  *
  * It draws through `rollShop(state.seed)`, exactly like `startNextRound`, and
  * stores the seed that comes back. The shop therefore stays deterministic: the

@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router";
-import { HALL_OF_FAME, ROUTES } from "../game";
+import { HALL_OF_FAME, ROUTES } from "../game/game";
 
 export function Layout() {
   return (

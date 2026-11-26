@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createBattle, newGame, skipReplay, startBattle, startSearch } from "./game";
-import { buyItem } from "./run";
-import { fromSave, saveBlocker, toSave, type SavedGame } from "./storage";
-import type { GameState, Opponent } from "./types";
+import { createBattle, newGame, skipReplay, startBattle, startSearch } from "../game/game";
+import { buyItem } from "../game/run";
+import { fromSave, saveBlocker, toSave, type SavedGame } from "../game/storage";
+import type { GameState, Opponent } from "../types";
 
 const opponentFor = (round: number): Opponent => ({
   id: "mossback-hermit", name: "Mossback Hermit", icon: "🐢", hp: 25, round, items: ["chipped-dagger"],

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CATALOG } from "./items";
+import { CATALOG } from "../game/items";
 
 describe("catalog", () => {
   it("has at least 3 poison items and 3 heal items", () => {

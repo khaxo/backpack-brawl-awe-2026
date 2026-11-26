@@ -1,8 +1,8 @@
-import { TICK_SECONDS } from "../battle";
-import { describeEffects, getItem } from "../items";
-import { sellPrice, moveBlocker, sellBlocker } from "../run";
-import { activeSets, SET_THRESHOLD, SETS } from "../sets";
-import { BACKPACK_COLS, itemIdsOf } from "../shop";
+import { TICK_SECONDS } from "../game/battle";
+import { describeEffects, getItem } from "../game/items";
+import { sellPrice, moveBlocker, sellBlocker } from "../game/run";
+import { activeSets, SET_THRESHOLD, SETS } from "../game/sets";
+import { BACKPACK_COLS, itemIdsOf } from "../game/shop";
 import { SetBadge } from "./SetBadge";
 import { useState } from "react";
 import type { ItemDef, RunState } from "../types"; // Vorher: Backpack as BackpackSlots

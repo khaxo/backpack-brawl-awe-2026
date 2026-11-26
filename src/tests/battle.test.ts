@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { BURN_DECAY_PER_TICK, BURN_STACKS_PER_HIT, buildFighter, POISON_INTERVAL, simulateBattle } from "./battle";
-import type { Fighter, ItemEffects } from "./types";
-import { GUARDIAN_BONUS_HP } from "./sets";
+import { BURN_DECAY_PER_TICK, BURN_STACKS_PER_HIT, buildFighter, POISON_INTERVAL, simulateBattle } from "../game/battle";
+import type { Fighter, ItemEffects } from "../types";
+import { GUARDIAN_BONUS_HP } from "../game/sets";
 
 
 /** A fighter with one test item per `[cooldown, effects]` pair. */

@@ -1,5 +1,5 @@
-import { getItem } from "../items";
-import { REROLL_COST, buyBlocker, rerollBlocker } from "../run";
+import { getItem } from "../game/items";
+import { REROLL_COST, buyBlocker, rerollBlocker } from "../game/run";
 import type { RunState } from "../types";
 import { ItemCard } from "./ItemCard";
 

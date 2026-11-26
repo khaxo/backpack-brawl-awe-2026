@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { newGame } from "../game";
-import { loadGame, toSave, writeSave } from "../storage";
+import { newGame } from "../game/game";
+import { loadGame, toSave, writeSave } from "../game/storage";
 import type { GameState } from "../types";
 import { GameContext, type GameContextValue } from "./GameContext";
 

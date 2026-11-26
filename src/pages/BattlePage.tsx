@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { BattleView } from "../components/BattleView";
 import { RunHeader } from "../components/RunHeader";
-import { advanceReplay, isReplayDone, leaveBattle, skipReplay } from "../game";
-import { runOutcome } from "../run";
+import { advanceReplay, isReplayDone, leaveBattle, skipReplay } from "../game/game";
+import { runOutcome } from "../game/run";
 import { useActiveGame } from "../state/GameContext";
 
 /** Milliseconds between two replayed battle frames. */

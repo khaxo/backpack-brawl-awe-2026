@@ -5,7 +5,7 @@
  * allows that; the cost is that two people running the app see two lists.
  */
 
-/** Mirrors `src/run.ts`. Duplicated because the server cannot import TypeScript. */
+/** Mirrors `src/game/run.ts`. Duplicated because the server cannot import TypeScript. */
 const START_LIVES = 3;
 const WINS_TO_VICTORY = 5;
 const MAX_NAME = 20;

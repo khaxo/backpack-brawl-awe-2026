@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { TICK_SECONDS } from "../battle";
-import { describeEffects } from "../items";
-import { COOLDOWN_HELP, EFFECT_HELP } from "../rules";
+import { TICK_SECONDS } from "../game/battle";
+import { describeEffects } from "../game/items";
+import { COOLDOWN_HELP, EFFECT_HELP } from "../game/rules";
 import type { ItemDef } from "../types";
 import { SetBadge } from "./SetBadge";
 
