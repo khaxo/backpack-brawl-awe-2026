@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getItem } from "./items";
-import { REROLL_COST, buyBlocker, buyItem, firstFreeSlot, newRun, rerollBlocker, rerollShop, sellBlocker, sellItem, sellPrice, moveBlocker, moveItem } from "./run";
-import { BACKPACK_SIZE } from "./shop";
-import type { RunState } from "./types";
+import { getItem } from "../game/items";
+import { REROLL_COST, buyBlocker, buyItem, firstFreeSlot, newRun, rerollBlocker, rerollShop, sellBlocker, sellItem, sellPrice, moveBlocker, moveItem } from "../game/run";
+import { BACKPACK_SIZE } from "../game/shop";
+import type { RunState } from "../types";
 
 /**
  * B1 — the shop economy. These tests cover the rules, not the components:

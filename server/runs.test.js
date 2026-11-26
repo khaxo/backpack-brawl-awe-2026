@@ -37,7 +37,7 @@ describe("runBlocker (B7)", () => {
 
   /**
    * Walks real runs battle by battle, exactly as `applyBattleResult` does in
-   * `src/run.ts`. This ties the duplicated constants to the game: change one
+   * `src/game/run.ts`. This ties the duplicated constants to the game: change one
    * side only and this goes red instead of rejecting honest players.
    */
   it("accepts every run the game itself can produce", () => {

@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
-import { HALL_OF_FAME, ROUTES } from "./game";
+import { HALL_OF_FAME, ROUTES } from "./game/game";
 import { BattlePage } from "./pages/BattlePage";
 import { HallOfFamePage } from "./pages/HallOfFamePage";
 import { Layout } from "./pages/Layout";

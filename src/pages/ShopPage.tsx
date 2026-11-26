@@ -5,8 +5,8 @@ import { FightBar } from "../components/FightBar";
 import { RulesPanel } from "../components/RulesPanel";
 import { RunHeader } from "../components/RunHeader";
 import { Shop } from "../components/Shop";
-import { fightBlocker, searchFailed, startBattle, startSearch, updateRun } from "../game";
-import { buyItem, rerollShop, sellItem, moveItem } from "../run";
+import { fightBlocker, searchFailed, startBattle, startSearch, updateRun } from "../game/game";
+import { buyItem, rerollShop, sellItem, moveItem } from "../game/run";
 import { useActiveGame } from "../state/GameContext";
 
 export function ShopPage() {

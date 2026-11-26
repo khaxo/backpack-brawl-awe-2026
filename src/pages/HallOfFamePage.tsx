@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { fetchHallOfFame, type HallOfFame } from "../api";
-import { routeForGame } from "../game";
+import { routeForGame } from "../game/game";
 import { useGame } from "../state/GameContext";
 
 /**

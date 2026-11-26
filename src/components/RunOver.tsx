@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { RunOutcome } from "../run";
+import type { RunOutcome } from "../game/run";
 import type { RunState } from "../types";
 
 /** `children` is the hall-of-fame form (B7); it sits between the summary and the "New run" button. */

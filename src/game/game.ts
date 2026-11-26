@@ -1,7 +1,7 @@
-import { buildOpponentFighter, buildPlayerFighter, simulateBattle } from "./battle";
-import { applyBattleResult, newRun, runOutcome } from "./run";
-import { itemIdsOf } from "./shop";
-import type { BattleReplay, GameState, Opponent, RunState } from "./types";
+import { buildOpponentFighter, buildPlayerFighter, simulateBattle } from "../game/battle";
+import { applyBattleResult, newRun, runOutcome } from "../game/run";
+import { itemIdsOf } from "../game/shop";
+import type { BattleReplay, GameState, Opponent, RunState } from "../types";
 
 /**
  * Phase transitions of one run: shop → searching → battle → shop … → finished.

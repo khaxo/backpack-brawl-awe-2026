@@ -1,4 +1,4 @@
-import { RULES } from "../rules";
+import { RULES } from "../game/rules";
 
 /** Collapsible summary of every game rule. */
 export function RulesPanel({ open = false }: { open?: boolean }) {

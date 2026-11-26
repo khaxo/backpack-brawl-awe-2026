@@ -1,8 +1,8 @@
 import { BURN_DAMAGE_PER_STACK, BURN_DECAY_PER_TICK, BURN_STACKS_PER_HIT, HERO_BASE_HP, MAX_TICKS, TICK_SECONDS, POISON_DAMAGE_PER_STACK, POISON_INTERVAL } from "./battle";
 import { GOLD_PER_ROUND, REROLL_COST, START_GOLD, START_LIVES, WINS_TO_VICTORY } from "./run";
 import { GUARDIAN_BONUS_HP, SET_THRESHOLD } from "./sets";
-import { BACKPACK_COLS, BACKPACK_ROWS, SHOP_SIZE } from "./shop";
-import type { ItemEffects, SetId } from "./types";
+import { BACKPACK_COLS, BACKPACK_ROWS, SHOP_SIZE } from "../game/shop";
+import type { ItemEffects, SetId } from "../types";
 
 /**
  * Player-facing explanations of the rules. Built from the game constants so

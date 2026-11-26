@@ -1,6 +1,6 @@
 /** B4 */
 import { getItem } from "./items";
-import type { SetId } from "./types";
+import type { SetId } from "../types";
 
 /** Items of one set needed for its bonus. */
 export const SET_THRESHOLD = 2;

@@ -1,7 +1,7 @@
-import { TICK_SECONDS, MAX_TICKS } from "../battle";
-import { getItem } from "../items";
-import { STATUS_HELP } from "../rules";
-import { SETS } from "../sets";
+import { TICK_SECONDS, MAX_TICKS } from "../game/battle";
+import { getItem } from "../game/items";
+import { STATUS_HELP } from "../game/rules";
+import { SETS } from "../game/sets";
 import { SetBadge } from "./SetBadge";
 import type { BattleEvent, BattleEventKind, BattleReplay, Fighter, FighterSnapshot, Side } from "../types";
 
